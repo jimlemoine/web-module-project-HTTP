@@ -31,7 +31,7 @@ const App = (props) => {
   }
 
   const addToFavorites = (movie) => {
-    
+    setFavoriteMovies([...favoriteMovies, movie])
   }
 
   return (
@@ -55,7 +55,7 @@ const App = (props) => {
             </Route>
 
             <Route path="/movies/:id">
-              <Movie deleteMovie={deleteMovie} />
+              <Movie deleteMovie={deleteMovie} addToFavorites={addToFavorites} />
             </Route>
 
             <Route path="/movies">
