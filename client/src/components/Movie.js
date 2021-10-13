@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
 
 import axios from 'axios';
+import DeleteMovieModal from './DeleteMovieModal';
 
 const Movie = (props) => {
-    const { addToFavorites } = props;
+    const { addToFavorites, deleteMovie } = props;
 
     const [movie, setMovie] = useState('');
+    const [showModal, setShowModal] = useState(false);
 
     const { id } = useParams();
     const { push } = useHistory();
@@ -20,6 +22,30 @@ const Movie = (props) => {
                 console.log(err.response);
             })
     }, [id]);
+
+    const handleDeleteYes = () => {
+        axios.delete(`http://localhost:5000/api/movies/${id}`)
+            .then(resp => {
+                deleteMovie(id);
+                setShowModal(false);
+                push(`/movies`);
+            })
+            .catch(err => {
+                console.log('movie handle delete error', err);
+            })
+    }
+
+    const handleDeleteNo = () => {
+        setShowModal(false);
+    }
+
+    const handleDelete = () => {
+        setShowModal(true);
+    }
+
+    const handleFavorite = () => {
+        addToFavorites(movie);
+    }
 
     return(<div className="modal-page col">
         <div className="modal-dialog">
@@ -50,9 +76,12 @@ const Movie = (props) => {
                         </section>
                         
                         <section>
-                            <span className="m-2 btn btn-dark">Favorite</span>
+                            <span onClick={handleFavorite} className="m-2 btn btn-dark">Favorite</span>
                             <Link to={`/movies/edit/${movie.id}`} className="m-2 btn btn-success">Edit</Link>
-                            <span className="delete"><input type="button" className="m-2 btn btn-danger" value="Delete"/></span>
+                            <span className="delete"><input type="button" onClick={handleDelete} className="m-2 btn btn-danger" value="Delete"/></span>
+                            {
+                                showModal && <DeleteMovieModal handleDeleteYes={handleDeleteYes} handleDeleteNo={handleDeleteNo} />
+                            }
                         </section>
                     </div>
                 </div>
